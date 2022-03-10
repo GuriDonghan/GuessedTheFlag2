@@ -11,6 +11,8 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var userScore = 0
+    @State private var countGame = 0
 
     
     @State var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
@@ -21,8 +23,6 @@ struct ContentView: View {
     var body: some View {
         
         ZStack {
-//            LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
-//                .ignoresSafeArea()
             
             RadialGradient(stops: [.init(color: Color(red: 0.1, green: 0.2, blue: 0.45), location: 0.3), .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3),], center: .top, startRadius: 200, endRadius: 700)
                 .ignoresSafeArea()
@@ -70,7 +70,7 @@ struct ContentView: View {
                 Spacer()
                 
                 
-                Text("점수: ???")
+                Text("점수: \(userScore)")
                     .foregroundColor(.white)
                     .font(.title.bold())
                 
@@ -79,17 +79,19 @@ struct ContentView: View {
             .padding()
         }
         .alert(scoreTitle, isPresented: $showingScore) {
-            Button("정답", action: askQustion)
+            Button("확인", action: askQustion)
         } message: {
-            Text("Your score is ???")
+            Text("선우 점수는 \(userScore)")
         }
     }
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "정답입니다!"
+            userScore += 5
         } else {
-            scoreTitle = "틀렸습니다!"
+            scoreTitle = "앗! 이건 \(countries[number]) 국기입니다."
+            userScore -= 2
         }
         
         showingScore = true
