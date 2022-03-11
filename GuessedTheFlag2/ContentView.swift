@@ -10,10 +10,11 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var showingScore = false
+    @State private var questionCount = false
     @State private var scoreTitle = ""
     @State private var userScore = 0
     @State private var countGame = 0
-
+    
     
     @State var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     
@@ -26,7 +27,7 @@ struct ContentView: View {
             
             RadialGradient(stops: [.init(color: Color(red: 0.1, green: 0.2, blue: 0.45), location: 0.3), .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3),], center: .top, startRadius: 200, endRadius: 700)
                 .ignoresSafeArea()
-
+            
             VStack {
                 Spacer()
                 
@@ -37,7 +38,7 @@ struct ContentView: View {
                 
                 VStack(spacing: 15) {
                     VStack {
-                     
+                        
                         Text(countries[correctAnswer])
                             .font(.largeTitle.weight(.semibold))
                         
@@ -45,8 +46,8 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                             .font(.subheadline.weight(.heavy))
                         
-                   
-                      
+                        
+                        
                     }
                     
                     ForEach(0..<3) { number in
@@ -56,7 +57,7 @@ struct ContentView: View {
                         } label: {
                             Image(countries[number])
                                 .renderingMode(.original)
-//                                .clipShape(Capsule())
+                            //                                .clipShape(Capsule())
                                 .shadow(radius: 5)
                         }
                     }
@@ -79,11 +80,19 @@ struct ContentView: View {
             .padding()
         }
         .alert(scoreTitle, isPresented: $showingScore) {
-            Button("확인", action: askQustion)
+            Button("확인", action: askQuestion)
         } message: {
-            Text("선우 점수는 \(userScore)")
+            Text("현재 점수는 \(userScore)")
         }
+        
+        .alert("게임종료!", isPresented: $questionCount) {
+            Button("다시 하기", action: reset )
+        } message: {
+            Text("선우의 최종 점수는 \(userScore)점")
+        }
+
     }
+    
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
@@ -95,11 +104,30 @@ struct ContentView: View {
         }
         
         showingScore = true
+        
+        // 게임 횟수를 제한 하는 Code
+        countGame += 1
+        //        print(countGame)
+        if countGame >= 8 {
+            questionCount = true
+        } else {
+            questionCount = false
+        }
+        //        print(questionCount)
+        
     }
     
-    func askQustion() {
+    func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func reset() {
+        countries.shuffle()
+        countGame = 0
+        userScore = 0
+        showingScore = false
+
     }
     
 }
